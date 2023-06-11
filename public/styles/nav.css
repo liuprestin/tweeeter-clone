@@ -1,0 +1,13 @@
+#tweeter-title {
+  font-family: "Bungee", sans-serif;
+}
+
+#tweeter-caption {
+  display: grid;
+  flex-direction: column;
+}
+
+#arrow-icon {
+  color: Red;
+  justify-self: center;
+}
