@@ -10,6 +10,10 @@ const app           = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
+//CORS workaround 
+const cors = require('cors');
+app.use(cors());
+
 // The in-memory database of tweets. It's a basic object with an array in it.
 const db = require("./lib/in-memory-db");
 
