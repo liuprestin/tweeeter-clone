@@ -1,50 +1,12 @@
-/*
- * Client-side JS logic goes here
- * jQuery is already loaded
- * Reminder: Use (and do all your DOM work in) jQuery's document ready function
- */
+// Tweeter client.js
+// AJAX calls to sync to server and update the HTML view
+// Libraries used:
+// jquery
+// timeago.js - https://github.com/hustcc/timeago.js
 
-// Test / driver code (temporary). Eventually will get this from the server.
-/*
-const tweetData = {
-  user: {
-    name: "Newton",
-    avatars: "https://i.imgur.com/73hZDYK.png",
-    handle: "@SirIsaac",
-  },
-  content: {
-    text: "If I have seen further it is by standing on the shoulders of giants",
-  },
-  created_at: 1461116232227,
-}; */
+//Global data store - not elegant...
+let data;
 
-
- const data = [
-    {
-      "user": {
-        "name": "Newton",
-        "avatars": "https://i.imgur.com/73hZDYK.png"
-        ,
-        "handle": "@SirIsaac"
-      },
-      "content": {
-        "text": "If I have seen further it is by standing on the shoulders of giants"
-      },
-      "created_at": 1461116232227
-    },
-    {
-      "user": {
-        "name": "Descartes",
-        "avatars": "https://i.imgur.com/nlhLi3I.png",
-        "handle": "@rd" },
-      "content": {
-        "text": "Je pense , donc je suis"
-      },
-      "created_at": 1461113959088
-    }
-  ];
-
-// Note: subject to change 
 function createTweetElement(data) {
   //Assumes that JSON is being passed in
   let tweetInfo;
@@ -60,6 +22,8 @@ function createTweetElement(data) {
     tweetInfo = data;
   }
 
+  const tweetDate = timeago.format(data.created_at);
+
   const $tweet =
     $(`<article id="tw_${tweetInfo.user.handle}_${tweetInfo.created_at}" class="tweet">
     <header>
@@ -73,7 +37,7 @@ function createTweetElement(data) {
       <p>${tweetInfo.content.text}</p>
     </div>
     <footer>
-      <p>10 days ago</p>
+      <p> ${tweetDate} </p>
       <div>
         <span class="material-symbols-outlined tweet_flag"> flag </span>
         <span class="material-symbols-outlined tweet_repeat"> repeat </span>
@@ -84,8 +48,8 @@ function createTweetElement(data) {
   return $tweet;
 }
 
-// Given an Array of Tweet data objects 
-// Add each of them to the dom 
+// Given an Array of Tweet data objects
+// Add each of them to the dom
 function renderTweets(tweets) {
   for (let ele of tweets) {
     const $tweet = createTweetElement(ele);
@@ -93,28 +57,72 @@ function renderTweets(tweets) {
   }
 }
 
-//Initalization function 
+//loadtweets to a dataObject
+function loadTweets() {
+  let urlStr = "/tweets";
+
+  $.ajax({
+    type: "GET",
+    url: urlStr,
+    success: function (result) {
+      data = result;
+      renderTweets(result);
+    },
+    error: function (error) {
+      console.log(error);
+    },
+  });
+  //return the response
+}
+
+//check the tweet
+//returns true or false
+//the tweet cannot be longer than 140 characters including spaces
+function validateTweet(data) {
+  if (!data && typeof data == "string") {
+    if (data.length < 140) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Registers event to Submit Tweets to the server
+function eventSubmitTweet() {
+  $("#tweet_form").on("submit", function (event) {
+    event.preventDefault();
+
+    const tweetText = $("#tweet_text").val();
+    if (validateTweet(tweetText)) {
+      alert("Tweet must be less than 140 characters or not a blank tweet");
+      return;
+    }
+
+    const formData = $(this).serialize();
+
+    $.ajax({
+      type: "POST",
+      url: "/tweets",
+      data: formData,
+      success: function (result) {
+        loadTweets();
+      },
+      error: function (error) {
+        console.log(error);
+      },
+    });
+  });
+}
+
+//Initalization function
 $(document).ready(function () {
-  renderTweets(data);
+  loadTweets();
+
+  //EVENT handlers
+  eventSubmitTweet();
 });
 
 /*Future notes will need to implement: 
-
-- event listener 
-- POST/GET request (AJAX with jquery)
-- will be using JSON serialize and a parsing function to use requested JSON data
-
-
-Time Passed display
-- add timeago library 
-- note: will need to check the version of jquery that is being used in this case
-- https://cdnjs.com/libraries/jquery-timeago
-- https://cdnjs.cloudflare.com/ajax/libs/jquery-timeago/1.6.7/jquery.timeago.min.js
-
-Validation
-- for post requests (from Client) - we'll need to validate
-- null
-- the max number of characters (ie. string.length)
 
 Need to add Cross Site scripting protection
 - see the post for details 
