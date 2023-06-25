@@ -29,6 +29,10 @@ article.tweet .tweet_post_text {
   font-family: "Source Sans 3", sans-serif;
 }
 
+article.tweet img {
+  margin-top: 1em;
+}
+
 article.tweet footer {
   display: flex;
   width: 100%;
