@@ -4,7 +4,7 @@
 // jquery
 // timeago.js - https://github.com/hustcc/timeago.js
 
-//Global data store - not elegant...
+//Global data store
 let data;
 
 function createTweetElement(data) {
@@ -76,14 +76,25 @@ function loadTweets() {
 }
 
 //check the tweet
-//returns true or false
-//the tweet cannot be longer than 140 characters including spaces
-function validateTweet(data) {
-  if (!data && typeof data == "string") {
-    if (data.length < 140) {
-      return true;
-    }
+//returns Error Message or "False"
+function checkTweetError(data) {
+  let errorMsg;
+
+  if(!data || data === ""){
+    errorMsg = "<div class='error-area'>Tweet Cannot be blank.</div>";
+    return errorMsg;
   }
+  if (typeof data != "string") {
+    errorMsg = "<div class='error-area'>Tweet is not a string.</div>";
+
+    return errorMsg
+  }
+
+  if ((typeof data == "string") && data.length > 140) {
+    errorMsg = "<div class='error-area'>Tweet cannot be larger than 140 characters, including spaces.</div>";
+    return errorMsg;
+  }
+  
   return false;
 }
 
@@ -92,12 +103,18 @@ function eventSubmitTweet() {
   $("#tweet_form").on("submit", function (event) {
     event.preventDefault();
 
+    // Validation and Error checking 
     const tweetText = $("#tweet_text").val();
-    if (validateTweet(tweetText)) {
-      alert("Tweet must be less than 140 characters or not a blank tweet");
+    const errorMsg = checkTweetError(tweetText);
+    if (errorMsg) {
+      $(".error-area").remove();
+      $(this).before(errorMsg).hide().slideDown();
       return;
+    } else {
+      $(".error-area").remove(); 
     }
 
+    // If ok send to the Server
     const formData = $(this).serialize();
 
     $.ajax({
@@ -122,12 +139,3 @@ $(document).ready(function () {
   eventSubmitTweet();
 });
 
-/*Future notes will need to implement: 
-
-Need to add Cross Site scripting protection
-- see the post for details 
-
-Error Displaying
-- to be honest - I think this should have been presenting 1st as it could also help with debugging
-- have a dedicated element just to display errors 
-*/

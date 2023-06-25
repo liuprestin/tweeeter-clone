@@ -8,6 +8,14 @@
   padding-right: 1.5em;
 }
 
+.error-area{
+  margin-bottom: 1.5em;
+  padding: 1em;
+  border-style: solid;
+  border-color: red;
+  color: red;
+}
+
 #tweet_form {
   display: flex;
   width: 80%;
