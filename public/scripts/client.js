@@ -145,6 +145,8 @@ function eventSubmitTweet() {
       data: formData,
       success: function (result) {
         loadTweets();
+        
+        //reset the tweet input form 
         $("#tweet_text").val("");
         $("#tweet_counter").val(140);
       },
