@@ -7,6 +7,13 @@
 //Global data store
 let data;
 
+// A workaround to prevent Cross-Site-Scripting
+function escapeXSS(str) {
+  let div = document.createElement("div");
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
+}
+
 function createTweetElement(data) {
   //Assumes that JSON is being passed in
   let tweetInfo;
@@ -24,17 +31,20 @@ function createTweetElement(data) {
 
   const tweetDate = timeago.format(data.created_at);
 
-  const $tweet =
-    $(`<article id="tw_${tweetInfo.user.handle}_${tweetInfo.created_at}" class="tweet">
+  const $tweet = $(`<article id="tw_${escapeXSS(tweetInfo.user.handle)}_${
+    tweetInfo.created_at
+  }" class="tweet">
     <header>
       <div>
-      <img src="${tweetInfo.user.avatars}" alt="${tweetInfo.handle}" width="80" height="80">
-        ${tweetInfo.user.name}
+      <img src="${tweetInfo.user.avatars}" alt="${escapeXSS(
+    tweetInfo.handle
+  )}" width="80" height="80">
+        ${escapeXSS(tweetInfo.user.name)}
       </div>
-      <div>${tweetInfo.user.handle}</div>
+      <div>${escapeXSS(tweetInfo.user.handle)}</div>
     </header>
     <div class="tweet_post_text">
-      <p>${tweetInfo.content.text}</p>
+      <p>${escapeXSS(tweetInfo.content.text)}</p>
     </div>
     <footer>
       <p> ${tweetDate} </p>
@@ -51,6 +61,10 @@ function createTweetElement(data) {
 // Given an Array of Tweet data objects
 // Add each of them to the dom
 function renderTweets(tweets) {
+  //Resets
+  $("#tweets-container").empty();
+
+  //Post the tweets to the page
   for (let ele of tweets) {
     const $tweet = createTweetElement(ele);
     $("#tweets-container").append($tweet);
@@ -69,7 +83,7 @@ function loadTweets() {
       renderTweets(result);
     },
     error: function (error) {
-      console.log(error);
+      displayError(error.statusText);
     },
   });
   //return the response
@@ -80,22 +94,30 @@ function loadTweets() {
 function checkTweetError(data) {
   let errorMsg;
 
-  if(!data || data === ""){
+  if (!data || data === "") {
     errorMsg = "<div class='error-area'>Tweet Cannot be blank.</div>";
     return errorMsg;
   }
   if (typeof data != "string") {
     errorMsg = "<div class='error-area'>Tweet is not a string.</div>";
-
-    return errorMsg
-  }
-
-  if ((typeof data == "string") && data.length > 140) {
-    errorMsg = "<div class='error-area'>Tweet cannot be larger than 140 characters, including spaces.</div>";
     return errorMsg;
   }
-  
+  if (typeof data == "string" && data.length > 140) {
+    errorMsg =
+      "<div class='error-area'>Tweet cannot be larger than 140 characters, including spaces.</div>";
+    return errorMsg;
+  }
+
   return false;
+}
+
+//Post Error message to the Tweeter frontend
+function displayError(error) {
+  $(".error-area").remove();
+
+  const errorMsg = `<div class='error-area'>${error}</div>`;
+
+  $('#tweets-container').prepend(errorMsg);
 }
 
 // Registers event to Submit Tweets to the server
@@ -103,7 +125,7 @@ function eventSubmitTweet() {
   $("#tweet_form").on("submit", function (event) {
     event.preventDefault();
 
-    // Validation and Error checking 
+    // Validation and Error checking
     const tweetText = $("#tweet_text").val();
     const errorMsg = checkTweetError(tweetText);
     if (errorMsg) {
@@ -111,7 +133,7 @@ function eventSubmitTweet() {
       $(this).before(errorMsg).hide().slideDown();
       return;
     } else {
-      $(".error-area").remove(); 
+      $(".error-area").remove();
     }
 
     // If ok send to the Server
@@ -123,11 +145,15 @@ function eventSubmitTweet() {
       data: formData,
       success: function (result) {
         loadTweets();
+        $("#tweet_text").val("");
+        $("#tweet_counter").val(140);
       },
       error: function (error) {
-        console.log(error);
+        displayError(error.statusText);
       },
     });
+
+    // UI reset now that tweet can be submitted
   });
 }
 
@@ -138,4 +164,3 @@ $(document).ready(function () {
   //EVENT handlers
   eventSubmitTweet();
 });
-
