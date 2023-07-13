@@ -67,7 +67,7 @@ function renderTweets(tweets) {
   //Post the tweets to the page
   for (let ele of tweets) {
     const $tweet = createTweetElement(ele);
-    $("#tweets-container").append($tweet);
+    $("#tweets-container").prepend($tweet);
   }
 }
 
