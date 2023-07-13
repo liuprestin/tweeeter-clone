@@ -149,6 +149,7 @@ function eventSubmitTweet() {
         //reset the tweet input form 
         $("#tweet_text").val("");
         $("#tweet_counter").val(140);
+        $('#tweet_counter').css('color', 'black');
       },
       error: function (error) {
         displayError(error.statusText);

@@ -27,6 +27,8 @@ article.tweet .tweet_post_text {
   border-bottom: 5px solid #545149;
   font-size: 24px;
   font-family: "Source Sans 3", sans-serif;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 article.tweet img {
