@@ -64,10 +64,6 @@ body {
   justify-items: center;
 }
 
-nav {
-  visibility: collapse;
-}
-
 /* Write CSS rules that target Tablets screen sizes upwards*/
 @media only screen and (min-width: 768px) {
   body {
@@ -80,10 +76,6 @@ nav {
 
   header {
     flex: 50%;
-  }
-
-  nav {
-    visibility: visible;
   }
 
   .container {
