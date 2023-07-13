@@ -61,7 +61,7 @@ https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FIL
         <form id="tweet_form" method="POST" action="/tweets/">
           <div id="tweet_prompt">
             <label for="tweet-text">What are you humming about?</label>
-            <textarea name="text" id="tweet_text"></textarea>
+            <textarea name="text" id="tweet_text" maxlength="140" minlength="1"></textarea>
           </div>
           <div id="tweet_submit">
             <button id="tweet_submit_btn" type="submit">Tweet</button>
