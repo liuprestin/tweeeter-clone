@@ -16,15 +16,21 @@ This project is for learning purposes.
 
 ## Dependencies 
 
-- Express
-- Node v16.13.2+
-
-note:
-
-- cors module has been added as a workaround for local development
-
-Client side libraries
+Frontend UI - Javascript libraries
 - [Jquery](https://jquery.com/)
 - [timeago](https://github.com/hustcc/timeago.js)
 
+Frontend UI - CSS and styling
+- Normalize.css
+- Google fonts 
+- Google Matieral UI symbols 
+
+Backend server
+
+- Node v16.13.2+
+- Express
+- body-parser
+- chance
+- cors
+- md5
 
